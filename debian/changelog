@@ -53,11 +53,7 @@ hollywood (1.20-0ubuntu1) focal; urgency=medium
 
 hollywood (1.19-0ubuntu1) focal; urgency=medium
 
-  * bin/hollywood, debian/control, debian/copyright, lib/hollywood/apg,
-    share/hollywood/mi.mp4, share/man/man1/hollywood.1, TODO:
-    - Bug #944275: remove last remnants of old sound/video plugin
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Nov 2019 07:34:11 -0600
+  * UNRELEASED
 
 hollywood (1.18-0ubuntu1) eoan; urgency=medium
 
