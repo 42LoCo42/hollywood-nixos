@@ -32,7 +32,8 @@
         };
 
         hollywood = pkgs.stdenvNoCC.mkDerivation rec {
-          name = "hollywood";
+          pname = "hollywood";
+          version = "2.0";
 
           src = toSource {
             root = ./.;
@@ -54,14 +55,14 @@
             # TODO currently broken :(
             rm -rf $out/{bin,lib,share{,/man/man1}}/wallstreet*
 
-            wrapProgram $out/bin/${name} \
+            wrapProgram $out/bin/${pname} \
               --prefix PATH : ${makeBinPath deps}
           '';
 
           meta = {
             description = "Generate panes of technical melodrama";
             homepage = "https://a.hollywood.computer";
-            mainProgram = name;
+            mainProgram = pname;
           };
         };
 
