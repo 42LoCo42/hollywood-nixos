@@ -17,15 +17,14 @@
 command -v tree >/dev/null 2>&1 || exit 1
 
 trap "pkill -f -9 lib/hollywood/ >/dev/null 2>&1; exit" INT
-DIRS="/sys /dev"
 
 while true; do
-	for d1 in $DIRS; do
-		for d2 in $d1/*; do
-			if [ -x $d2 ]; then
-				tree $d2
+	for d1 in /sys /dev; do
+		while read -r d2; do
+			if [ -x "$d2" ]; then
+				tree "$d2"
 				sleep 0.5
 			fi
-		done
+		done < <(find "$d1")
 	done
 done

@@ -21,9 +21,9 @@ command -v pygmentize >/dev/null 2>&1 && viewer="pygmentize" || viewer="cat"
 
 trap "pkill -f -9 lib/hollywood/ >/dev/null 2>&1; exit" INT
 while true; do
-	FILES=$(find /usr -readable -size +0 -type f -name \*.java -o -name \*.c -o -name \*.cpp -o -name \*.py 2>/dev/null | sort -R)
-	for f in $FILES; do
-		$viewer "$f" 2>/dev/null || true
+	while read -r f; do
+		"$viewer" "$f" 2>/dev/null || true
 		sleep 2
-	done
+	done < <(find -L /run/current-system/sw "$HOME" -maxdepth 6 -readable -size +0 -type f \
+		-name '*.java' -or -name '*.c' -or -name '*.cpp' -or -name '*.py' | sort -R)
 done

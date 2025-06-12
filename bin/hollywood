@@ -28,29 +28,26 @@ spin_up() {
 	local dir="v"
 	local split=1
 	sleep 0.5
-	for w in $(ls "$WIDGET_DIR" | sort -R); do
+	while read -r w; do
 		[ "$dir" = "-v" ] && dir="-h" || dir="-v"
-		panes=$(tmux list-panes -t $PKG 2>/dev/null)
+		panes="$(tmux list-panes -t "$PKG")"
 		# Allow for failed widgets
-		splits=$(echo "$panes" | wc -l)
-		pane=$((RANDOM % $splits))
-		tmux split-window $dir -t ${PKG}.$pane "MPLAYER_OPTS='$MPLAYER_OPTS' nice -n 19 $WIDGET_DIR/$w" >/dev/null 2>&1
+		splits="$(wc -l <<< "$panes")"
+		pane="$((RANDOM % splits))"
+		tmux split-window "$dir" -t "${PKG}.$pane" "nice -n 19 $w" >/dev/null 2>&1
 		sleep 0.2
-		split=$((split+1))
-		if [ $split -ge $SPLITS ]; then
-			break
-		fi
-	done
+		split="$((split+1))"
+		if ((split >= SPLITS)); then break; fi
+	done < <(find "$WIDGET_DIR" -mindepth 1 | sort -R)
 }
 
-MPLAYER_OPTS="-nosound -speed 5"
-WIDGET_DIR="$(dirname $0)/../lib/$PKG"
-SPLITS=$(ls "$WIDGET_DIR" | wc -l)
+WIDGET_DIR="$(dirname "$0")/../lib/$PKG"
+SPLITS="$(find "$WIDGET_DIR" -mindepth 1 | wc -l)"
 DELAY=10
-while [ ! -z "$1" ]; do
-	case "$1" in
+for i in "$@"; do
+	case "$i" in
 		--sound)
-			MPLAYER_OPTS=""
+			mplayer -vo null -loop 0 "$(dirname "$0")/../share/$PKG/mi.mp4" &
 			shift
 		;;
 		-d|--delay)
@@ -62,44 +59,41 @@ while [ ! -z "$1" ]; do
 			shift 2
 		;;
 		-h|--help|*)
-			exec man $PKG
+			exec man "$PKG"
 		;;
 	esac
 done
 
-widget1=$(ls "$WIDGET_DIR/" | sort -R | head -n1)
-arrangements="main-horizontal main-vertical tiled"
+widget1="$(find "$WIDGET_DIR" -mindepth 1 | sort -R | head -n1)"
 
 if [ -z "$TMUX" ]; then
 	# Not in a tmux session: start one, with
 	# byobu if it's found, else with plain tmux
-	command -v byobu >/dev/null 2>&1
-	if [ $? -eq 0 ]; then
+	if command -v byobu >/dev/null 2>&1; then
 		tmux_launcher=byobu
 	else
 		tmux_launcher=tmux
 	fi
-	$tmux_launcher new-session -d -s $PKG "/bin/bash"
-	$tmux_launcher send-keys -t $PKG "$0 -s $SPLITS -d $DELAY"
-	$tmux_launcher send-keys -t $PKG Enter
-	exec $tmux_launcher attach-session -t $PKG
+	"$tmux_launcher" new-session -d -s "$PKG" "/usr/bin/env bash"
+	"$tmux_launcher" send-keys -t "$PKG" "$0 -s $SPLITS -d $DELAY"
+	"$tmux_launcher" send-keys -t "$PKG" Enter
+	exec "$tmux_launcher" attach-session -t "$PKG"
 	exit 1
 fi
 
-tmux new-window -n $PKG "$WIDGET_DIR/$widget1" \; \
-	set-option -g pane-active-border-bg "default" \; \
-	set-option -g pane-active-border-fg "default" >/dev/null 2>&1
+tmux new-window -n "$PKG" "$widget1" \; \
+	set-option -g pane-active-border-style default \;
 
 spin_up
 
 i=0
 while true; do
-	i=$((i+1))
-	if [ "$((i % DELAY))" = "0" ]; then
-		tmux kill-pane -a -t $PKG.bottom-right
+	i="$((i+1))"
+	if (((i % DELAY) == 0)); then
+		tmux kill-pane -a -t "$PKG.bottom-right"
 		spin_up
 	fi
-	if [ $(tmux list-panes -t $PKG 2>/dev/null | wc -l) -gt 0 ]; then
+	if (($(tmux list-panes -t "$PKG" | wc -l) > 0)); then
 		sleep 1
 		continue
 	fi

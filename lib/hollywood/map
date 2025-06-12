@@ -19,7 +19,7 @@ command -v jp2a >/dev/null 2>&1 || exit 1
 trap "pkill -f -9 lib/hollywood/ >/dev/null 2>&1; exit" INT
 
 PKG=hollywood
-dir="$(dirname $0)/../../share/$PKG"
+dir="$(dirname "$0")/../../share/$PKG"
 while true; do
 	jp2a --colors -z --fill "$dir/map.jpg"
 	sleep 1

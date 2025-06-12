@@ -22,10 +22,10 @@ command -v jp2a >/dev/null 2>&1 || exit 1
 
 trap "pkill -f -9 lib/hollywood/ >/dev/null 2>&1; exit" INT
 while true; do
-	FILES=$(find /usr -readable -size +0 -type f -name \*.jpg 2>/dev/null | sort -R)
-	for f in $FILES; do
+	while read -r f; do
 		clear
 		jp2a --colors --term-fit "$f"
 		sleep 0.57
-	done
+	done < <(find -L /run/current-system/sw -maxdepth 6 -readable -size +0 -type f \
+		-name '*.jpg' -or -name '*.png' -or -name '*.webp' | sort -R)
 done

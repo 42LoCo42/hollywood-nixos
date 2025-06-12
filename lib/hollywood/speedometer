@@ -18,8 +18,8 @@ command -v speedometer >/dev/null 2>&1 || exit 1
 
 trap "pkill -f -9 lib/hollywood/ >/dev/null 2>&1; exit" INT
 while true; do
-	while read Iface Destination Gateway Flags RefCnt Use Metric Mask MTU Window IRTT; do
-		[ "$Mask" = "00000000" ] && break
+	while read -r iface _ _ _ _ _ _ mask _ _ _; do
+		[ "$mask" = "00000000" ] && break
 	done < /proc/net/route
-	speedometer -tx $Iface -rx $Iface -i 0.75
+	speedometer -tx "$iface" -rx "$iface" -i 0.75
 done
