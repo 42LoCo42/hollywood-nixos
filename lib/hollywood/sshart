@@ -17,7 +17,7 @@
 command -v ssh-keygen >/dev/null 2>&1 || exit 1
 command -v ccze >/dev/null 2>&1 || exit 1
 
-tmpfile="$(mktemp)"
+tmpfile="$(mktemp -t 'hollywood.XXXXXXXXXX')"
 trap 'rm -f "$tmpfile"; pkill -f -9 lib/hollywood/' INT
 while true; do
 	echo y | ssh-keygen -vvv -b 1024 -t ed25519 -N "" -f "$tmpfile" | ccze -A -c default=red
