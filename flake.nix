@@ -52,7 +52,7 @@
             chmod -R +w $out
 
             # TODO currently broken :(
-            rm -rf $out/{bin,lib}/wallstreet
+            rm -rf $out/{bin,lib,share{,/man/man1}}/wallstreet*
 
             wrapProgram $out/bin/${name} \
               --prefix PATH : ${makeBinPath deps}
