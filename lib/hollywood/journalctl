@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+command -v journalctl >/dev/null 2>&1 || exit 1
+command -v awk >/dev/null 2>&1 || exit 1
+
+trap "pkill -f -9 lib/hollywood/ >/dev/null 2>&1; exit" INT
+while true; do
+	boot="$(journalctl --list-boots | tail -n+2 | awk '{print $1}' | shuf -n1)"
+	journalctl -b "$boot" -n +5000 | sort -R | head -n 500 | ccze -A
+done

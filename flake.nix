@@ -71,6 +71,8 @@
           ccze
           coreutils
           findutils
+          gawk
+          ncurses # clear
           procps # pkill
           tmux
 
@@ -79,9 +81,11 @@
           atop
           bmon
           cmatrix
+          genact
           htop
           jp2a
           mplayer
+          rust-stakeholder
           speedometer
           tree
 

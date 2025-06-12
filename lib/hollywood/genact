@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+command -v genact >/dev/null 2>&1 || exit 1
+
+trap "pkill -f -9 lib/hollywood/ >/dev/null 2>&1; exit" INT
+
+genact

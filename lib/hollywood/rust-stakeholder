@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+command -v rust-stakeholder >/dev/null 2>&1 || exit 1
+
+trap "pkill -f -9 lib/hollywood/ >/dev/null 2>&1; exit" INT
+
+read -r type < <(
+	shuf -n1 <<-EOF
+		backend
+		frontend
+		fullstack
+		data-science
+		dev-ops
+		blockchain
+		machine-learning
+		systems-programming
+		game-development
+		security
+	EOF
+)
+
+rust-stakeholder         \
+	--dev-type "$type"   \
+	--complexity extreme \
+	--jargon     extreme \
+	--alerts --team
